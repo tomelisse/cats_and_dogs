@@ -2,9 +2,11 @@ from datasets import prepare_data as dp
 from datasets import get_dataset as dg
 
 def main():
-    dp.make_data()
+    # dp.make_data()
     filepath = 'data/cats_and_dogs.storage'
-    dg.HdfDataset(filepath)
+    dataset = dg.HdfDataset(filepath)
+    for _ in range(5):
+        images, labels = dataset.next_batch(2)
 
 if __name__ == '__main__':
     main()

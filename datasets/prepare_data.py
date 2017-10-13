@@ -54,7 +54,7 @@ def store(t_img, t_lab, v_img, v_lab):
     print('File {} was created'.format(filepath))
 
 def make_data():
-    paths  = get_paths()[:10]
+    paths  = get_paths()[:20]
     arrays = make_arrays(paths)
     groups = make_groups(*arrays)
     store(*groups)
