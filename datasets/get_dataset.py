@@ -4,13 +4,14 @@ class HdfDataset(object):
     ''' HDF5 dataset '''
     def __init__(self, filepath):
         self.filepath = filepath
-        self.where_in_epoch = 0
+        self.where_in_epoch   = 0
+        self.epochs_completed = 0
         with h5py.File(filepath) as f:
             self.n_examples = f['training/images'].shape[0]
             self.n_classes  = f['training/labels'].shape[1]
-            self.width    = f['training/images'].shape[1]
-            self.height   = f['training/images'].shape[2]
-            self.depth    = f['training/images'].shape[3]
+            self.width      = f['training/images'].shape[1]
+            self.height     = f['training/images'].shape[2]
+            self.depth      = f['training/images'].shape[3]
         print 'Accessing file {} with {} examples and {} classes.'\
                 .format(filepath, self.n_examples, self.n_classes) 
 
@@ -19,6 +20,8 @@ class HdfDataset(object):
         start = self.where_in_epoch
         self.where_in_epoch += batch_size
         if self.where_in_epoch > self.n_examples:
+            self.epochs_completed += 1
+            print('Epochs completed: {}'.format(self.epochs_completed))
             start = 0
             self.where_in_epoch = batch_size
         stop = self.where_in_epoch

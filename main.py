@@ -7,6 +7,8 @@ def main():
     dataset = dg.HdfDataset(filepath)
     for _ in range(5):
         images, labels = dataset.next_batch(2)
+        # print images.shape
+        # print labels
 
 if __name__ == '__main__':
     main()
