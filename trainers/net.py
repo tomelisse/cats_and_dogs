@@ -54,6 +54,40 @@ class Network(object):
         correct = tf.cast(correct, 'float')
         self.acc = tf.reduce_mean(correct)
 
+    def make_conv(self):
+        ''' convolutional layer '''
+        # weights
+        Wc_shape = [self.filter_size, 
+                    self.filter_size, 
+                    self.depth,
+                    self.n_filters]
+        Wc = tf.Variable(tf.truncated_normal(Wc_shape))
+
+        # biases
+        bc_shape = [self.n_filters]
+        bc = tf.Variable(tf.truncated_normal(W1_size))
+
+        # apply convolution
+        conved = tf.nn.conv2d(self.inputs, 
+                            Wc, 
+                            strides = [1,1,1,1], 
+                            padding = 'SAME')
+        # add bias
+        biased = tf.nn.bias_add(conved, bc)
+
+        # rectified linear unit
+        relued = tf.nn.relu(biased)
+
+        # down-sampling
+        pool_window = [1, self.k_pool,
+                       self.k_pool,1]
+        pooled = tf.nn.max_pool(relued,
+                                k_size  = pool_window,
+                                strides = pool_window,
+                                padding = 'SAME')
+
+        return pooled
+
     def prepare_training(self):
         ''' define gradient update method '''
         optimizer            = tf.train.AdamOptimizer(self.learning_rate)

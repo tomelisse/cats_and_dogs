@@ -5,8 +5,11 @@ def main():
     # dp.make_data()
     filepath = 'data/cats_and_dogs.storage'
     dataset = dg.HdfDataset(filepath)
-    for _ in range(5):
-        images, labels = dataset.next_batch(2)
+    print dataset.height
+    print dataset.width
+    print dataset.depth
+    # for _ in range(5):
+        # images, labels = dataset.next_batch(2)
         # print images.shape
         # print labels
 
