@@ -11,7 +11,8 @@ class Network(object):
         self.batch_size      = 5
         self.batch_per_epoch = 2
         self.learning_rate   = 0.1
-        self.dropout         = 0.8
+        # the probability that the element is kept
+        self.keep_prob = 0.8
 
         # plot data containers
         self.losses = []
@@ -27,10 +28,13 @@ class Network(object):
 
     def make_params(params):
         ''' name params '''
-        self.width  = params[0]
-        self.height = params[1]
-        self.depth  = params[2]
-        self.n_classes = params[]
+        self.width       = params[0]
+        self.height      = params[1]
+        self.depth       = params[2]
+        self.n_classes   = params[3]
+        self.n_filters   = params[4]
+        self.filter_size = params[5]
+        self.pool_size   = params[6]
 
     def make_graph(self):
         ''' define net structure '''
@@ -41,9 +45,9 @@ class Network(object):
         self.labels = tf.placeholder(tf.float32, shape = out_shape)
 
         # go through convolution
-        self.after_conv = self.make_conv()
+        self.conved = self.make_conv()
         # go through the fully-connected layer
-        self.after_fc   = self.make_fc()
+        self.fced= self.make_fc()
 
         self.predictions = []
 
@@ -65,7 +69,7 @@ class Network(object):
 
         # biases
         bc_shape = [self.n_filters]
-        bc = tf.Variable(tf.truncated_normal(W1_size))
+        bc = tf.Variable(tf.truncated_normal(bc_shape))
 
         # apply convolution
         conved = tf.nn.conv2d(self.inputs, 
@@ -87,6 +91,31 @@ class Network(object):
                                 padding = 'SAME')
 
         return pooled
+
+    def make_fc(self):
+        ''' fully-connected layer '''
+        # new width
+        width = self.n_filters*self.width*self.height/(self.pool_size*self.pool_size)
+        # fc input reshaping
+        x = tf.reshape(self.conved, [-1, width])
+
+        # weights
+        Wfc_shape = [width, self.n_classes]
+        Wfc = tf.Variable(tf.trunkated_normal(Wfc_shape))
+
+        # biases
+        bfc_shape = [self.n_classes]
+        bfc = tf.Variable(tf.trunkated_normal(bfc_shape))
+
+        # fc layer
+        fced   = tf.nn.add_bias(tf.matmul(x, Wfc), bfc)
+        # rectified linear unit
+        relued = tf.nn.relu(fced) 
+        
+        # dropout
+        dropped = tf.dropout(relued, self.keep_prob)
+
+        return dropped
 
     def prepare_training(self):
         ''' define gradient update method '''
